@@ -3,6 +3,8 @@ package handlers
 import (
 	"net/http"
 	"reflect"
+	"web-college/internal"
+	//"github.com/sirupsen/logrus"
 )
 
 type RegForm struct {
@@ -40,7 +42,8 @@ func RegHandler(db SaveUser) http.HandlerFunc {
 				}
 
 			}
-			err := db.SaveUser(f.FirsName, f.LastName, f.Email, f.Password)
+		
+			err := db.SaveUser(f.FirsName, f.LastName, f.Email, internal.SumPassword(f.Password))
 			if err != nil {
 				panic(err)
 			}

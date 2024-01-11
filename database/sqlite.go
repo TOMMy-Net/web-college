@@ -11,9 +11,11 @@ type Storage struct {
 }
 func DBLite() (*Storage, error){
 	db, err := sql.Open("sqlite3", "database/sqlite.db")
-	
+	if err != nil{
+		return nil, err
+	}
 	CreateTables(db)
-	return &Storage{DB: db}, err
+	return &Storage{DB: db}, nil
 }
 
 func CreateTables(db *sql.DB)  {
@@ -29,7 +31,7 @@ func CreateTables(db *sql.DB)  {
 	data.Exec()
 }
 
-func (db *Storage) SaveUser(fn, ln, email, password string)  error{
+func (db *Storage) SaveUser(fn, ln, email string, password string)  error{
 	data, err := db.DB.Prepare(`INSERT INTO accounts (first_name, last_name, email, password) VALUES (?, ?, ?, ?)`)
 	if err != nil{
 		return err

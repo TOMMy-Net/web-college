@@ -1,2 +1,2 @@
-./database/sqlite.db
-./logging/server_errors.log
+database/sqlite.db
+logging/server_errors.log
