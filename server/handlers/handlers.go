@@ -4,7 +4,9 @@ import (
 	"net/http"
 	"reflect"
 	"web-college/internal"
+
 	//"github.com/sirupsen/logrus"
+	"html/template"
 )
 
 type RegForm struct {
@@ -14,8 +16,13 @@ type RegForm struct {
 	Password string
 }
 
+type IsReg struct {
+	Yes bool
+}
+
 type SaveUser interface {
 	SaveUser(fn, ln, email, password string) error
+	CheckUser(email string) (bool, error)
 }
 
 func RegHandler(db SaveUser) http.HandlerFunc {
@@ -42,7 +49,14 @@ func RegHandler(db SaveUser) http.HandlerFunc {
 				}
 
 			}
-		
+			if ok, err := db.CheckUser(f.Email); err != nil {
+				panic(err)
+			} else if ok {
+				tmpl, _ := template.ParseFiles("templates/html/reg.html")
+				tmpl.Execute(w, IsReg{Yes: true})
+				return
+			}
+
 			err := db.SaveUser(f.FirsName, f.LastName, f.Email, internal.SumPassword(f.Password))
 			if err != nil {
 				panic(err)
@@ -50,7 +64,8 @@ func RegHandler(db SaveUser) http.HandlerFunc {
 			http.Redirect(w, r, "/", http.StatusMovedPermanently)
 
 		} else if r.Method == http.MethodGet {
-			http.ServeFile(w, r, "templates/html/reg.html")
+			tmpl, _ := template.ParseFiles("templates/html/reg.html")
+			tmpl.Execute(w, "")
 		}
 	}
 }

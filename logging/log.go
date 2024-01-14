@@ -12,18 +12,16 @@ const (
 	DbError     = "logging/db_errors.log"
 )
 
-func LoggerNew(f string) *logrus.Logger{
-	var logrus = logrus.New()
-	
-	
-	file, err := os.OpenFile(f, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-	if err == nil {
-		logrus.Out = file
-	} else {
-		logrus.Fatal("Failed to log to file, using default stderr")
-		return nil
+func LoggerNew() *logrus.Logger{
+	var log = logrus.New()   
+	log.Formatter = &logrus.TextFormatter{
+		DisableColors: false,
 	}
-	return logrus
-	
+	return log
 }
 
+func WriteLog(filePath string) *os.File{
+	file, _ := os.OpenFile(filePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	
+	return file
+}
